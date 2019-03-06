@@ -1,0 +1,67 @@
+package at.fhjoanneum.ippr.processengine.repositories;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import at.fhjoanneum.ippr.persistence.entities.engine.process.ProcessInstanceImpl;
+import at.fhjoanneum.ippr.persistence.objects.engine.enums.ProcessInstanceState;
+
+@Repository
+public interface ProcessInstanceRepository
+    extends PagingAndSortingRepository<ProcessInstanceImpl, Long> {
+
+  @Query(value = "SELECT * FROM process_instance p WHERE p.state = :state", nativeQuery = true)
+  List<ProcessInstanceImpl> getProcessesWithState(@Param("state") String state);
+
+  @Query(value = "SELECT COUNT(p.pi_id) FROM process_instance p WHERE p.state = :state",
+      nativeQuery = true)
+  Long getAmountOfProcessesInState(@Param("state") String state);
+
+  @Query(
+      value = "SELECT count(p.pi_id) FROM process_instance p JOIN process_subject_instance_map psm on psm.pi_id = p.pi_id "
+          + "JOIN subject s on s.s_id = psm.s_id WHERE p.state = :state and s.user_id = :userId",
+      nativeQuery = true)
+  Long getAmountOfProcessesInStatePerUser(@Param("state") String state,
+      @Param("userId") Long userId);
+
+  @Query(value = "SELECT p FROM PROCESS_INSTANCE p WHERE p.state = :state", nativeQuery = false)
+  Page<ProcessInstanceImpl> getProcessesInfoOfState(Pageable pageable,
+      @Param("state") ProcessInstanceState state);
+
+  @Query(
+      value = "SELECT p FROM PROCESS_INSTANCE p JOIN p.subjects s WHERE s.userId = :user AND p.state = :state",
+      nativeQuery = false)
+  Page<ProcessInstanceImpl> getProcessesInfoOfUserAndState(Pageable pageable,
+      @Param("user") Long user, @Param("state") ProcessInstanceState state);
+
+  @Query(
+      value = "select count(p) from PROCESS_INSTANCE p where p.startTime between :start and :end",
+      nativeQuery = false)
+  Long getAmountOfStartedProcessesBetweenRange(@Param("start") LocalDateTime start,
+      @Param("end") LocalDateTime end);
+
+  @Query(
+      value = "select count(p) from PROCESS_INSTANCE p where p.endTime between :start and :end and p.state = 'FINISHED'",
+      nativeQuery = false)
+  Long getAmountOfFinishedProcessesBetweenRange(@Param("start") LocalDateTime start,
+      @Param("end") LocalDateTime end);
+
+  @Query(
+      value = "select count(p) from PROCESS_INSTANCE p JOIN p.subjects s where p.startTime between :start and :end and s.userId = :user",
+      nativeQuery = false)
+  Long getAmountOfStartedProcessesBetweenRangeForUser(@Param("start") LocalDateTime start,
+      @Param("end") LocalDateTime end, @Param("user") Long userId);
+
+  @Query(
+      value = "select count(p) from PROCESS_INSTANCE p JOIN p.subjects s where p.endTime between :start and :end and p.state = 'FINISHED' and s.userId = :user",
+      nativeQuery = false)
+  Long getAmountOfFinishedProcessesBetweenRangeForUser(@Param("start") LocalDateTime start,
+      @Param("end") LocalDateTime end, @Param("user") Long userId);
+}

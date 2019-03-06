@@ -1,0 +1,68 @@
+<div>
+
+  <br>
+  <div><h2>Selected process details: </h2></div>
+  <nb-card>
+    <table>
+      <tr>
+        <th>Process Name:</th>
+        <th>Description:</th>
+        <th>Creator:</th>
+        <th>Created at:</th>
+        <th>Process ID:</th>
+        <th>Version:</th>
+        <th>Is Approved:</th>
+      </tr>
+
+      <tr>
+        <td>{{process?.processName}}</td>
+        <td>{{process?.processDescription}}</td>
+        <td>{{process?.processCreator}}</td>
+        <td>{{process?.processCreatedAt | date:'dd-MM-yyyy'}}</td>
+        <td>{{process?.processId}}</td>
+        <td>{{process?.processVersion}}</td>
+        <td>{{process?.processApproved}}</td>
+      </tr>
+    </table>
+  </nb-card>
+
+
+  <!--
+  <h2>Review comments: </h2>
+  <nb-card>
+    <table>
+      <tr>
+        <th>Comment:</th>
+        <th>User:</th>
+        <th>Created at:</th>
+        <th>Process ID:</th>
+      </tr>
+
+      <tr *ngFor="let review of processReviews">
+        <td>{{review?.comment}}</td>
+        <td>{{review?.uploader}}</td>
+        <td>{{review?.created_at | date :'short'}}</td>
+        <td>{{review?.process_id}}</td>
+        <td>{{review?.processApproverComment}}</td>
+      </tr>
+    </table>
+  </nb-card>
+  -->
+
+
+  <form (ngSubmit)="postComment()" #form="ngForm">
+  <div class="form-group">
+    <label for="input-comment"><h2>Reviewer Comment:</h2></label>
+    <input name="processApproverComment" [(ngModel)]="alteredProcess.processApproverComment" id="input-comment"
+           #processApproverComment="ngModel" class="form-control" placeholder="Comment here">
+  </div>
+    <div class="btn-group btn-group-full-width col-md-12">
+    <button class="btn btn-info">Post comment</button>
+      <button (click)="approveStoreProcess()" class="btn btn-success">Approve this process model</button>
+      <button (click)="unapproveStoreProcess()" class="btn btn-danger">Deny this process model</button>
+      <button routerLink="/approval" class="btn btn-secondary">Cancel</button>
+    </div>
+  </form>
+
+
+</div>

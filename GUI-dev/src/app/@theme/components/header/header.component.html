@@ -1,0 +1,29 @@
+<div class="header-container"
+     [class.left]="position === 'normal'"
+     [class.right]="position === 'inverse'">
+  <div class="logo-containter">
+    <a (click)="toggleSidebar()" href="#" class="navigation"><i class="nb-menu"></i></a>
+    <div class="logo"><a href="#" (click)="goToHome()"><img src="../../../../assets/easybizlogo.png" alt="EasyBiz" class="logo"></a></div>
+  </div>
+
+</div>
+
+<div *ngIf="authenticated; else login"
+     class="header-container"
+     [class.right]="position === 'normal'"
+     [class.left]="position === 'inverse'">
+<nb-actions>
+  <!--<nb-action icon="nb-grid-b" class="toggle-layout" (click)="toggleSettings()"></nb-action>-->
+  <nb-action *nbIsGranted="['view', 'profile']">
+    <nb-user [nbContextMenu]="userMenu" [name]="user?.email"></nb-user>
+  </nb-action>
+</nb-actions>
+</div>
+
+<ng-template #login>
+<div class="header-container"
+     [class.right]="position === 'normal'"
+     [class.left]="position === 'inverse'">
+  <a routerLink="/auth/login">Sign In</a>
+</div>
+</ng-template>
